@@ -1,21 +1,9 @@
 ### This script can be used to add annotations to files that would be the same for every file in a data release (ELITE annotations)
 
-view_id <- "synID" # Insert synID of filew view you would like to use to add annotations
+query = synTableQuery("select * from synID") # Insert synID of filew view you would like to use to add annotations, query in the file view
+view= as.data.frame(query) # Open the file view query as a data frame
 
-# Query in file view as a data frame
-view <- synTableQuery(paste0("SELECT * FROM ", view_id))$asDataFrame()
+view$annotation <- "Test Annotation" # Fill in the column(s) of the data frame with the annotations you would like to add to the files in the file view
+view$annotation2 <- "Test Annotation  2"
 
-# Fill the columns of the data frame with the annotations that you would like to add to all of the files
-view$testAnnotation1 <- "test"
-view$testAnnotation2 <- "testing"
-
-# Once the data frame is ready to upload back into Synapse, you need to add the ROW_ID and ROW_VERSION columns (table metadata)
-
-# The ROW_ID column should be only the numbers of the synID (Pulling in the 4th and 11th character from the first column)
-view$ROW_ID <- substr(view[[1]], 4, 11)
-
-# The ROW_VERSION should just be 1 unless the view has been versioned 
-view$ROW_VERSION <- "1"
-
-# After the columns are filled and the table metadata have been added, upload the table into synapse, adding the annotations to the files in the file view
-synStore(Table(view_id, view))
+synStore(Table("synID", view)) # After the columns are filled and the table metadata have been added, upload the table into synapse, adding the annotations to the files in the file view
