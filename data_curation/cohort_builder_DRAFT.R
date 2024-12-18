@@ -181,6 +181,7 @@ filemap <- filemap %>%
 # Add this file to the current backend table
 
 individualtofilemap <- synTableQuery("SELECT * FROM synID") # Insert synID for the individualToFileMap backend table
+# Add WHERE statement to add in studyKey to ensure that duplicate IDs for different studies are not included
 individualtofilemap_df <- as.data.frame(individualtofilemap)
 
 updated_individualtofilemap <- bind_rows(individualtofilemap_df, filemap)
