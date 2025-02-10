@@ -1,7 +1,7 @@
 ### Backend Individuals table update
 
 ### Pull in fresh metadata
-metadata <- read.csv(synGet("syn64756955")$path)
+metadata <- read.csv(synGet("syn64756955")$path) # This example is utilizing mock metadata from a sandbox project, insert the individual metadata synID you will be using here
 
 metadata <- metadata %>%
   select(individualId, age, sex, studyCode, diagnosis)
@@ -40,4 +40,4 @@ metadata$individualId <- with(id_mapping,
                               individualId[match(metadata$individualId, originalId)])
 
 ### Upload new Individual data into the Backend - Individuals table
-synStore(Table("syn64290226",metadata))
+synStore(Table("syn64290226",metadata)) ### This is the synID of the backend individuals table
