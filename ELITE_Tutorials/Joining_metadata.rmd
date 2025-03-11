@@ -1,0 +1,102 @@
+---
+title: "ELITE Portal Tutorial: Joining Metadata"
+author: "Melissa Klein (Sage Bionetworks)"
+date: "`r Sys.Date()`"
+format: 
+  html: 
+    toc: true
+    toc-depth: 3
+    df-print: paged
+knit: (function(input_file, encoding) {
+   out_dir <- 'docs';
+   rmarkdown::render(input_file,
+     encoding=encoding,
+     output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+---
+
+```{r, set-opts, include=FALSE}
+knitr::opts_chunk$set(
+  eval = TRUE,
+  print.rows = 10
+)
+
+# Prevent individual IDs from printing out in scientific notation
+options(scipen = 999)
+```
+
+#### Install Synapser if you have not already
+
+```{r install-synapser, eval = FALSE}
+install.packages("synapser", repos = c("http://ran.synapse.org"))
+install.packages(c("tidyverse", "lubridate"))
+```
+
+#### Load libraries
+
+```{r load-libraries, message=FALSE, warning=TRUE}
+library(synapser)
+library(readr)
+library(dplyr)
+library(magrittr)
+```
+
+#### Log in to Synapse
+
+```{r synlogin, eval=FALSE}
+synLogin()
+```
+
+```{r synlogin_run, include = FALSE}
+# For prettier rendered display: This executes the code without showing the
+# printed welcome statements. The next block will show the code but not run it.
+synLogin(authToken = "INSERT AUTH TOKEN HERE")
+```
+
+#### Download and read in metadata files
+
+There are 3 metadata files that you will want to have access to and potentially join together to understand data you are looking at on the ELITE Portal: Individual, Biospecimen, and Assay.
+
+This example utilizes the three metadata files that can be found in the [Study Details Page](https://eliteportal.synapse.org/Explore/Studies/DetailsPage/StudyData?studyKey=Mouse_M005_Study_Metabolomics) for the Mouse M005 Metabolomics Study.
+
+The query below is generated when you download programmatically directly from the ELITE Portal.
+
+```{r portal-query}
+# Download the results of the filtered table query
+query <- synTableQuery("SELECT * FROM syn52234677 WHERE ( ( \"Study\" = 'Mouse_M005_Study_Metabolomics' ) ) AND ( `resourceType` = 'metadata' )")
+read.table(query$filepath, sep = ",")
+
+# View the file path of the resulting csv
+query$filepath
+```
+
+Now that the files have been downloaded, we can read them into R.
+
+```{r read-metadata-files}
+# Individual metadata
+individual_metadata <- read_csv("files/individual_non_human_M005_Longevity Consortium_11-11-2024_final.csv", show_col_types = FALSE)
+
+# Biospecimen metadata
+biospecimen_metadata <- read_csv("files/biospecimen_non_human_M005_Longevity Consortium_11-11-2024_final.csv", show_col_types = FALSE)
+
+# Assay metadata
+assay_metadata <- read_csv("files/synapse_storage_manifest_assaymetabolomicstemplate.csv", show_col_types = FALSE)
+```
+
+#### Join Metadata
+
+Now, we join the metadata files together using left joins, matching on specimenID, then on individualID.
+
+```{r join-metadata}
+# join all the rows in the assay metadata that have a match in the biospecimen metadata
+joined_meta <- assay_metadata |> 
+  
+  #join rows from biospecimen that match specimenID
+  left_join(biospecimen_metadata, by = "specimenID") |>
+  
+  # join rows from individual that match individualID
+  left_join(individual_metadata, by = "individualID")
+
+joined_meta
+```
+
+Congratulations! You have now bulk downloaded and joined metadata files!
