@@ -1,4 +1,4 @@
-### Data Indexing - BioProject
+### Data Indexing - BioProject Example
 
 # Load required R libraries
 library(httr)          # For making HTTP requests (like requests in Python)
