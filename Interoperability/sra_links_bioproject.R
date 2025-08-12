@@ -1,12 +1,12 @@
 ### Data Indexing - BioProject Example
 
-# Load required R libraries
-library(httr)          # For making HTTP requests (like requests in Python)
-library(rvest)         # For web scraping (like BeautifulSoup)
-library(tidyverse)     # For data manipulation (like pandas + numpy)
-library(stringr)       # For regular expressions (like re)
-library(synapser)      # For Synapse interaction
-library(xml2)          # Similar to lxml
+# Load R libraries
+library(httr)
+library(rvest)
+library(tidyverse)
+library(stringr)
+library(synapser)
+library(xml2)
 
 # Log in to Synapse
 synLogin()
